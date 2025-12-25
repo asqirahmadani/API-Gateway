@@ -1,0 +1,16 @@
+{
+  "name": "service-b",
+  "version": "1.0.0",
+  "description": "Microservice B for API Gateway Demo",
+  "main": "service-b.js",
+  "scripts": {
+    "start": "node service-b.js",
+    "dev": "nodemon service-b.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
