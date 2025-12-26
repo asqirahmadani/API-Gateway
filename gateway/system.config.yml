@@ -1,0 +1,19 @@
+db:
+  redis:
+    host: localhost
+    port: 6379
+    namespace: EG
+
+systemEndpoints:
+  admin:
+    host: "*"
+    port: 9876
+    hostname: localhost
+
+plugins:
+  express-gateway-plugin-basic-auth:
+    package: express-gateway-plugin-basic-auth
+  express-gateway-plugin-cors:
+    package: express-gateway-plugin-cors
+  express-gateway-plugin-rewrite:
+    package: express-gateway-plugin-rewrite

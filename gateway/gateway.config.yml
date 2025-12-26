@@ -1,0 +1,80 @@
+http:
+  port: 8080
+
+apiEndpoints:
+  # endpoint for Service A
+  serviceA:
+    host: "*"
+    paths: "/api/service-a/*"
+    methods: ["GET", "POST", "PUT", "DELETE"]
+
+  # endpoint for Service B
+  serviceB:
+    host: "*"
+    paths: "/api/service-b/*"
+    methods: ["GET", "POST", "PUT", "DELETE"]
+
+  # health check endpoint
+  health:
+    host: "*"
+    paths: "/health"
+    methods: ["GET"]
+
+serviceEndpoints:
+  # backend Service A
+  serviceABackend:
+    url: "http://service-a:3001"
+
+  # backend Service B
+  serviceBBackend:
+    url: "http://service-b:3002"
+
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+  - request-transformer
+  - response-transformer
+
+pipelines:
+  # pipeline for Service A
+  serviceAPipeline:
+    apiEndpoints:
+      - serviceA
+    policies:
+      - log:
+          - action:
+              message: "Request to Service A: ${req.method} ${req.url}"
+      - proxy:
+          - action:
+              serviceEndpoint: serviceABackend
+              changeOrigin: true
+              stripPath: true
+
+  # pipeline for Service B
+  serviceBPipeline:
+    apiEndpoints:
+      - serviceB
+    policies:
+      - log:
+          - action:
+              message: "Request to Service B: ${req.method} ${req.url}"
+      - proxy:
+          - action:
+              serviceEndpoint: serviceBBackend
+              changeOrigin: true
+              stripPath: true
+
+  # pipeline for Health Check
+  healthPipeline:
+    apiEndpoints:
+      - health
+    policies:
+      - expression:
+          - action:
+              jscode: 'res.json({ status: "Gateway is running", timestamp: new Date().toISOString() })'
