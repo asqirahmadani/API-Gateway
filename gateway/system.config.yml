@@ -3,12 +3,34 @@ db:
     host: localhost
     port: 6379
     namespace: EG
+    # connection pool settings
+    maxRetriesPerRequest: 3
+    enableReadyCheck: true
+    connectTimeout: 10000
 
 systemEndpoints:
   admin:
     host: "*"
     port: 9876
     hostname: localhost
+
+# session settings
+session:
+  secret: "keyboard cat"
+  resave: false
+  saveUninitialized: false
+
+# access token settings
+accessTokens:
+  timeToExpiry: 7200000
+
+# refresh token settings
+refreshTokens:
+  timeToExpiry: 86400000
+
+# API key settings
+authorizationCodeGrants:
+  timeToExpiry: 300000
 
 plugins:
   express-gateway-plugin-basic-auth:
