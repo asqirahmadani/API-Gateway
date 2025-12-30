@@ -1,6 +1,23 @@
 # version: "3.8"
 
 services:
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
   # API Gateway
   gateway:
     image: express-gateway:latest
@@ -14,8 +31,15 @@ services:
     networks:
       - microservices-network
     depends_on:
-      - service-a
-      - service-b
+      redis:
+        condition: service_healthy
+      service-a:
+        condition: service_started
+      service-b:
+        condition: service_started
+      environment:
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
 
   # Microservice A
   service-a:
@@ -44,6 +68,10 @@ services:
       - SERVICE_NAME=Service-B
     networks:
       - microservices-network
+
+volumes:
+  redis-data:
+    driver: local
 
 networks:
   microservices-network:
