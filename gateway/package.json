@@ -1,0 +1,15 @@
+{
+  "name": "api-gateway",
+  "version": "1.0.0",
+  "description": "API Gateway with Rate Limiting",
+  "main": "gateway-service.js",
+  "scripts": {
+    "start": "node gateway-service.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6",
+    "cors": "^2.8.5",
+    "redis": "^4.6.0"
+  }
+}

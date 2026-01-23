@@ -20,14 +20,15 @@ services:
 
   # API Gateway
   gateway:
-    image: express-gateway:latest
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
     container_name: api-gateway
     ports:
       - "8080:8080"
-      - "9876:9876" # Admin API
     volumes:
-      - ./gateway/gateway.config.yml:/var/lib/eg/gateway.config.yml
-      - ./gateway/system.config.yml:/var/lib/eg/system.config.yml
+      - ./gateway:/app
+      - /app/node_modules
     networks:
       - microservices-network
     depends_on:
@@ -37,9 +38,24 @@ services:
         condition: service_started
       service-b:
         condition: service_started
-      environment:
-        - REDIS_HOST=redis
-        - REDIS_PORT=6379
+
+  # Microservices Admin
+  admin:
+    build:
+      context: ./services/admin
+      dockerfile: Dockerfile
+    container_name: admin-service
+    ports:
+      - "4000-4000"
+    environment:
+      - PORT=4000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - microservices-network
+    depends_on:
+      redis:
+        condition: service_healthy
 
   # Microservice A
   service-a:
