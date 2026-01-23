@@ -46,7 +46,7 @@ services:
       dockerfile: Dockerfile
     container_name: admin-service
     ports:
-      - "4000-4000"
+      - "4000:4000"
     environment:
       - PORT=4000
       - REDIS_HOST=redis

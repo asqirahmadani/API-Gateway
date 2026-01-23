@@ -23,16 +23,13 @@ Public Routes
 */
 
 // health check
-app.get(
-  "/health",
-  rateLimiter("public", (req, res, next) => {
-    res.json({
-      status: "Gateway is running",
-      timestamp: new Date().toISOString(),
-      redis: "connected",
-    });
-  })
-);
+app.get("/health", rateLimiter("public"), (req, res) => {
+  res.json({
+    status: "Gateway is running",
+    timestamp: new Date().toISOString(),
+    redis: "connected",
+  });
+});
 
 // public API
 app.get("/api/public/*", rateLimiter("public"), (req, res) => {
@@ -69,7 +66,7 @@ app.use(
       console.log(
         `Proxied to Service A: ${req.method} ${req.path} by ${
           req.user?.username || "anonymous"
-        }`
+        }`,
       );
     },
     onError: (err, req, res) => {
@@ -80,12 +77,12 @@ app.use(
         service: "service-a",
       });
     },
-  })
+  }),
 );
 
 // Service B - Products API (requires API key)
 app.use(
-  "/api/service/b",
+  "/api/service-b",
   apiKeyValidator,
   rateLimiter("auto"),
   createProxyMiddleware({
@@ -102,7 +99,7 @@ app.use(
       console.log(
         `Proxied to Service B: ${req.method} ${req.path} by ${
           req.user?.username || "anonymous"
-        }`
+        }`,
       );
     },
     onError: (err, req, res) => {
@@ -113,7 +110,7 @@ app.use(
         service: "service-b",
       });
     },
-  })
+  }),
 );
 
 // Premium endpoints (higher rate limit)
@@ -140,7 +137,7 @@ app.use(
       proxyReq.setHeader("X-Consumer-Username", req.user.username);
       proxyReq.setHeader("X-Consumer-Tier", "premium");
     },
-  })
+  }),
 );
 
 // 404 handler
